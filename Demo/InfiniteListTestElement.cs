@@ -12,9 +12,9 @@ public class InfiniteListTestElement : InfiniteListElement
     private InfiniteListScrollRect _scrollRect;
     private InfiniteListTestData _data;
 
-    public override void UpdateData(InfiniteListScrollRect scrollRect, InfiniteListData data)
+    public override void OnUpdateData(InfiniteListScrollRect scrollRect, InfiniteListData data)
     {
-        base.UpdateData(scrollRect, data);
+        base.OnUpdateData(scrollRect, data);
 
         _scrollRect = scrollRect;
         _data = data as InfiniteListTestData;
@@ -22,9 +22,9 @@ public class InfiniteListTestElement : InfiniteListElement
         RemoveButton.onClick.AddListener(() => { _scrollRect.RemoveData(_data); });
     }
 
-    public override void ClearData()
+    public override void OnClearData()
     {
-        base.ClearData();
+        base.OnClearData();
 
         RemoveButton.onClick.RemoveAllListeners();
     }

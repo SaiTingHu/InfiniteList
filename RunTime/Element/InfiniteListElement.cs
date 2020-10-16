@@ -29,7 +29,7 @@ namespace InfiniteList
         /// </summary>
         /// <param name="scrollRect">无限列表滚动视野</param>
         /// <param name="data">无限列表数据</param>
-        public virtual void UpdateData(InfiniteListScrollRect scrollRect, InfiniteListData data)
+        public virtual void OnUpdateData(InfiniteListScrollRect scrollRect, InfiniteListData data)
         {
 
         }
@@ -37,7 +37,7 @@ namespace InfiniteList
         /// <summary>
         /// 清理显示数据
         /// </summary>
-        public virtual void ClearData()
+        public virtual void OnClearData()
         {
 
         }

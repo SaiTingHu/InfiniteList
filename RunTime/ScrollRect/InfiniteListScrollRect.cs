@@ -172,7 +172,7 @@ namespace InfiniteList
 
                         InfiniteListElement element = ExtractIdleElement();
                         element.UITransform.anchoredPosition = new Vector2(0, viewY);
-                        element.UpdateData(this, data);
+                        element.OnUpdateData(this, data);
                         _displayElements.Add(data, element);
                     }
                     else
@@ -205,7 +205,7 @@ namespace InfiniteList
 
                         InfiniteListElement element = ExtractIdleElement();
                         element.UITransform.anchoredPosition = new Vector2(viewX, 0);
-                        element.UpdateData(this, data);
+                        element.OnUpdateData(this, data);
                         _displayElements.Add(data, element);
                     }
                     else
@@ -292,7 +292,7 @@ namespace InfiniteList
         /// <param name="element">无限列表元素</param>
         private void RecycleElement(InfiniteListElement element)
         {
-            element.ClearData();
+            element.OnClearData();
             element.gameObject.SetActive(false);
             _elementsPool.Enqueue(element);
         }
