@@ -1,2 +1,2 @@
 # InfiniteList
-A infinite list scroll view of unity UGUI.
+基于Unity的UGUI的无限列表滚动视图。
