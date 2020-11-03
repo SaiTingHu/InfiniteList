@@ -27,6 +27,7 @@ namespace InfiniteList
         public int Interval = 5;
 
         private List<InfiniteListData> _datas = new List<InfiniteListData>();
+        private HashSet<InfiniteListData> _dataIndexs = new HashSet<InfiniteListData>();
         private Dictionary<InfiniteListData, InfiniteListElement> _displayElements = new Dictionary<InfiniteListData, InfiniteListElement>();
         private HashSet<InfiniteListData> _invisibleList = new HashSet<InfiniteListData>();
         private Queue<InfiniteListElement> _elementsPool = new Queue<InfiniteListElement>();
@@ -46,6 +47,16 @@ namespace InfiniteList
                 return _uiTransform;
             }
         }
+        /// <summary>
+        /// 当前数据数量
+        /// </summary>
+        public int DataCount
+        {
+            get
+            {
+                return _datas.Count;
+            }
+        }
 
         protected override void Awake()
         {
@@ -55,17 +66,24 @@ namespace InfiniteList
         }
 
         /// <summary>
-        /// 添加一条新的数据到无限列表
+        /// 添加一条新的数据到无限列表尾部
         /// </summary>
         /// <param name="data">无限列表数据</param>
         public void AddData(InfiniteListData data)
         {
+            if (_dataIndexs.Contains(data))
+            {
+                Debug.LogWarning("添加数据至无限列表失败：列表中已存在该数据 " + data.ToString());
+                return;
+            }
+
             _datas.Add(data);
-            
+            _dataIndexs.Add(data);
+
             RefreshScrollContent();
         }
         /// <summary>
-        /// 添加多条新的数据到无限列表
+        /// 添加多条新的数据到无限列表尾部
         /// </summary>
         /// <typeparam name="T">无限列表数据类型</typeparam>
         /// <param name="datas">无限列表数据</param>
@@ -73,13 +91,20 @@ namespace InfiniteList
         {
             for (int i = 0; i < datas.Length; i++)
             {
+                if (_dataIndexs.Contains(datas[i]))
+                {
+                    Debug.LogWarning("添加数据至无限列表失败：列表中已存在该数据 " + datas[i].ToString());
+                    continue;
+                }
+
                 _datas.Add(datas[i]);
+                _dataIndexs.Add(datas[i]);
             }
 
             RefreshScrollContent();
         }
         /// <summary>
-        /// 添加多条新的数据到无限列表
+        /// 添加多条新的数据到无限列表尾部
         /// </summary>
         /// <typeparam name="T">无限列表数据类型</typeparam>
         /// <param name="datas">无限列表数据</param>
@@ -87,7 +112,14 @@ namespace InfiniteList
         {
             for (int i = 0; i < datas.Count; i++)
             {
+                if (_dataIndexs.Contains(datas[i]))
+                {
+                    Debug.LogWarning("添加数据至无限列表失败：列表中已存在该数据 " + datas[i].ToString());
+                    continue;
+                }
+
                 _datas.Add(datas[i]);
+                _dataIndexs.Add(datas[i]);
             }
 
             RefreshScrollContent();
@@ -98,9 +130,10 @@ namespace InfiniteList
         /// <param name="data">无限列表数据</param>
         public void RemoveData(InfiniteListData data)
         {
-            if (_datas.Contains(data))
+            if (_dataIndexs.Contains(data))
             {
                 _datas.Remove(data);
+                _dataIndexs.Remove(data);
 
                 if (_displayElements.ContainsKey(data))
                 {
@@ -110,6 +143,10 @@ namespace InfiniteList
 
                 RefreshScrollContent();
             }
+            else
+            {
+                Debug.LogWarning("从无限列表中移除数据失败：列表中不存在该数据 " + data.ToString());
+            }
         }
         /// <summary>
         /// 清除所有的无限列表数据
@@ -117,6 +154,7 @@ namespace InfiniteList
         public void ClearData()
         {
             _datas.Clear();
+            _dataIndexs.Clear();
 
             foreach (var element in _displayElements)
             {
@@ -169,7 +207,7 @@ namespace InfiniteList
                             _displayElements[data].UITransform.anchoredPosition = new Vector2(0, viewY);
                             continue;
                         }
-
+                        
                         InfiniteListElement element = ExtractIdleElement();
                         element.UITransform.anchoredPosition = new Vector2(0, viewY);
                         element.OnUpdateData(this, data);
