@@ -1,11 +1,11 @@
-# InfiniteList
+ï»¿# InfiniteList
 
-»ùÓÚUnityµÄUGUIµÄÎŞÏŞÁĞ±í¹ö¶¯ÊÓÍ¼¡£
+åŸºäºUnityçš„UGUIçš„æ— é™åˆ—è¡¨æ»šåŠ¨è§†å›¾ã€‚
 
-## »·¾³
+## ç¯å¢ƒ
 
-- Unity°æ±¾£º2018.4.0¼°ÒÔÉÏ¡£
+- Unityç‰ˆæœ¬ï¼š2018.4.0åŠä»¥ä¸Šã€‚
 
-## Ê¹ÓÃÖ¸ÄÏ
+## ä½¿ç”¨æŒ‡å—
 
-- [Infinite List](https://wanderer.blog.csdn.net/article/details/109118582) - Unity UGUIÎŞÏŞÁĞ±í£¨Infinite List£©¡£
+- [Infinite List](https://wanderer.blog.csdn.net/article/details/109118582) - Unity UGUIæ— é™åˆ—è¡¨ï¼ˆInfinite Listï¼‰ã€‚
