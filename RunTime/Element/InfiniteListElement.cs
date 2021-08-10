@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace InfiniteList
+namespace HT.InfiniteList
 {
     /// <summary>
     /// 无限列表元素

@@ -1,4 +1,4 @@
-﻿using InfiniteList;
+﻿using HT.InfiniteList;
 using UnityEngine.UI;
 
 /// <summary>

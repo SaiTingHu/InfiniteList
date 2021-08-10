@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace InfiniteList
+namespace HT.InfiniteList
 {
     public static class InfiniteListEditorUtility
     {

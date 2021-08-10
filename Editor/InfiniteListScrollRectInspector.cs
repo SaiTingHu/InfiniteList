@@ -2,7 +2,7 @@
 using UnityEditor.UI;
 using UnityEngine;
 
-namespace InfiniteList
+namespace HT.InfiniteList
 {
     [CustomEditor(typeof(InfiniteListScrollRect), true)]
     [CanEditMultipleObjects]

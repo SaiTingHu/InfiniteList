@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InfiniteList
+namespace HT.InfiniteList
 {
     /// <summary>
     /// 无限列表异常
