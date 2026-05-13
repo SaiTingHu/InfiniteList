@@ -62,6 +62,18 @@ namespace HT.InfiniteList
         {
             base.Awake();
 
+            // 设置滚动方向单方向匹配
+            if (ListingDirection == Direction.Vertical)
+            {
+                horizontal = false;
+                vertical = true;
+            }
+            else if (ListingDirection == Direction.Horizontal)
+            {
+                horizontal = true;
+                vertical = false;
+            }
+            
             onValueChanged.AddListener((value) => { RefreshScrollView(); });
         }
 
@@ -189,7 +201,10 @@ namespace HT.InfiniteList
             if (ListingDirection == Direction.Vertical)
             {
                 float contentY = content.anchoredPosition.y;
-                float viewHeight = UITransform.sizeDelta.y;
+
+                // 修复Scroll View的尺寸采用自适应父节点的方式导致渲染的BUG
+                // https://discussions.unity.com/t/how-do-i-get-the-literal-width-of-a-recttransform/135984
+                float viewHeight = UITransform.rect.height;
 
                 ClearInvisibleVerticalElement(contentY, viewHeight);
 
@@ -222,7 +237,11 @@ namespace HT.InfiniteList
             else
             {
                 float contentX = content.anchoredPosition.x;
-                float viewWidth = UITransform.sizeDelta.x;
+
+                // 修复Scroll View的尺寸采用自适应父节点的方式导致渲染的BUG
+                // https://discussions.unity.com/t/how-do-i-get-the-literal-width-of-a-recttransform/135984
+                // float viewWidth = UITransform.sizeDelta.x;
+                float viewWidth = UITransform.rect.width;
 
                 ClearInvisibleHorizontalElement(contentX, viewWidth);
 
