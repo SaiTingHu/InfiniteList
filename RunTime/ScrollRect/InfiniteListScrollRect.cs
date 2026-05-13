@@ -26,11 +26,11 @@ namespace HT.InfiniteList
         /// </summary>
         public int Interval = 5;
 
-        private List<InfiniteListData> _datas = new List<InfiniteListData>();
-        private HashSet<InfiniteListData> _dataIndexs = new HashSet<InfiniteListData>();
-        private Dictionary<InfiniteListData, InfiniteListElement> _displayElements = new Dictionary<InfiniteListData, InfiniteListElement>();
-        private HashSet<InfiniteListData> _invisibleList = new HashSet<InfiniteListData>();
-        private Queue<InfiniteListElement> _elementsPool = new Queue<InfiniteListElement>();
+        private List<IListData> _datas = new List<IListData>();
+        private HashSet<IListData> _dataIndexs = new HashSet<IListData>();
+        private Dictionary<IListData, IListElement> _displayElements = new Dictionary<IListData, IListElement>();
+        private HashSet<IListData> _invisibleList = new HashSet<IListData>();
+        private Queue<IListElement> _elementsPool = new Queue<IListElement>();
         private RectTransform _uiTransform;
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace HT.InfiniteList
         /// 添加一条新的数据到无限列表尾部
         /// </summary>
         /// <param name="data">无限列表数据</param>
-        public void AddData(InfiniteListData data)
+        public void AddData(IListData data)
         {
             if (_dataIndexs.Contains(data))
             {
@@ -99,7 +99,7 @@ namespace HT.InfiniteList
         /// </summary>
         /// <typeparam name="T">无限列表数据类型</typeparam>
         /// <param name="datas">无限列表数据</param>
-        public void AddDatas<T>(T[] datas) where T : InfiniteListData
+        public void AddDatas<T>(T[] datas) where T : IListData
         {
             for (int i = 0; i < datas.Length; i++)
             {
@@ -120,7 +120,7 @@ namespace HT.InfiniteList
         /// </summary>
         /// <typeparam name="T">无限列表数据类型</typeparam>
         /// <param name="datas">无限列表数据</param>
-        public void AddDatas<T>(List<T> datas) where T : InfiniteListData
+        public void AddDatas<T>(List<T> datas) where T : IListData
         {
             for (int i = 0; i < datas.Count; i++)
             {
@@ -140,7 +140,7 @@ namespace HT.InfiniteList
         /// 移除一条无限列表数据
         /// </summary>
         /// <param name="data">无限列表数据</param>
-        public void RemoveData(InfiniteListData data)
+        public void RemoveData(IListData data)
         {
             if (_dataIndexs.Contains(data))
             {
@@ -212,7 +212,7 @@ namespace HT.InfiniteList
                 if (originIndex < 0) originIndex = 0;
                 for (int i = originIndex; i < _datas.Count; i++)
                 {
-                    InfiniteListData data = _datas[i];
+                    IListData data = _datas[i];
                     float viewY = -(i * Height + (i + 1) * Interval);
                     float realY = viewY + contentY;
                     if (realY > -viewHeight)
@@ -223,7 +223,7 @@ namespace HT.InfiniteList
                             continue;
                         }
                         
-                        InfiniteListElement element = ExtractIdleElement();
+                        IListElement element = ExtractIdleElement();
                         element.UITransform.anchoredPosition = new Vector2(0, viewY);
                         element.OnUpdateData(this, data);
                         _displayElements.Add(data, element);
@@ -240,7 +240,6 @@ namespace HT.InfiniteList
 
                 // 修复Scroll View的尺寸采用自适应父节点的方式导致渲染的BUG
                 // https://discussions.unity.com/t/how-do-i-get-the-literal-width-of-a-recttransform/135984
-                // float viewWidth = UITransform.sizeDelta.x;
                 float viewWidth = UITransform.rect.width;
 
                 ClearInvisibleHorizontalElement(contentX, viewWidth);
@@ -249,7 +248,7 @@ namespace HT.InfiniteList
                 if (originIndex < 0) originIndex = 0;
                 for (int i = originIndex; i < _datas.Count; i++)
                 {
-                    InfiniteListData data = _datas[i];
+                    IListData data = _datas[i];
                     float viewX = i * Height + (i + 1) * Interval;
                     float realX = viewX + contentX;
                     if (realX < viewWidth)
@@ -260,7 +259,7 @@ namespace HT.InfiniteList
                             continue;
                         }
 
-                        InfiniteListElement element = ExtractIdleElement();
+                        IListElement element = ExtractIdleElement();
                         element.UITransform.anchoredPosition = new Vector2(viewX, 0);
                         element.OnUpdateData(this, data);
                         _displayElements.Add(data, element);
@@ -328,29 +327,30 @@ namespace HT.InfiniteList
         /// 提取一个空闲的无限列表元素
         /// </summary>
         /// <returns>无限列表元素</returns>
-        private InfiniteListElement ExtractIdleElement()
+        private IListElement ExtractIdleElement()
         {
             if (_elementsPool.Count > 0)
             {
-                InfiniteListElement element = _elementsPool.Dequeue();
-                element.gameObject.SetActive(true);
+                IListElement element = _elementsPool.Dequeue();
+                element.SetVisible(true);
                 return element;
             }
             else
             {
-                GameObject element = Instantiate(ElementTemplate, content);
-                element.SetActive(true);
-                return element.GetComponent<InfiniteListElement>();
+                GameObject go = Instantiate(ElementTemplate, content);
+                IListElement element = go.GetComponent<IListElement>();
+                element.SetVisible(true);
+                return element;
             }
         }
         /// <summary>
         /// 回收一个无用的无限列表元素
         /// </summary>
         /// <param name="element">无限列表元素</param>
-        private void RecycleElement(InfiniteListElement element)
+        private void RecycleElement(IListElement element)
         {
             element.OnClearData();
-            element.gameObject.SetActive(false);
+            element.SetVisible(false);
             _elementsPool.Enqueue(element);
         }
 

@@ -1,0 +1,24 @@
+{
+    "name": "com.ht.infinitelist",
+    "displayName": "HT Infinitelist",
+    "version": "1.0.0",
+    "unity": "2022.3",
+    "description": "An infinite list scrolling view based on Unity's UGUI.",
+    "author": {
+        "name": "SaiTingHu",
+        "url": "https://wanderer.blog.csdn.net/"
+    },
+    "samples": [
+        {
+            "displayName": "Demo",
+            "description": "demo",
+            "path": "Samples~/Demo"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SaiTingHu/InfiniteList.git"
+    },
+    "relatedPackages": {},
+    "dependencies": {}
+}

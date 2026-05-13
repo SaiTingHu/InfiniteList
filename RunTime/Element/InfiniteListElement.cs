@@ -5,7 +5,7 @@ namespace HT.InfiniteList
     /// <summary>
     /// 无限列表元素
     /// </summary>
-    public class InfiniteListElement : MonoBehaviour
+    public class InfiniteListElement : MonoBehaviour, IListElement
     {
         private RectTransform _uiTransform;
 
@@ -24,12 +24,17 @@ namespace HT.InfiniteList
             }
         }
 
+        public void SetVisible(bool visible)
+        {
+            gameObject.SetActive(visible);
+        }
+
         /// <summary>
         /// 更新显示数据
         /// </summary>
         /// <param name="scrollRect">无限列表滚动视野</param>
         /// <param name="data">无限列表数据</param>
-        public virtual void OnUpdateData(InfiniteListScrollRect scrollRect, InfiniteListData data)
+        public virtual void OnUpdateData(InfiniteListScrollRect scrollRect, IListData data)
         {
 
         }
