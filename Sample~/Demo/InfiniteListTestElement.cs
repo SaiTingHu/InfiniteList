@@ -12,7 +12,7 @@ public class InfiniteListTestElement : InfiniteListElement
     private InfiniteListScrollRect _scrollRect;
     private InfiniteListTestData _data;
 
-    public override void OnUpdateData(InfiniteListScrollRect scrollRect, InfiniteListData data)
+    public override void OnUpdateData(InfiniteListScrollRect scrollRect, IListData data)
     {
         base.OnUpdateData(scrollRect, data);
 
