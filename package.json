@@ -6,7 +6,7 @@
     "description": "An infinite list scrolling view based on Unity's UGUI.",
     "author": {
         "name": "SaiTingHu",
-        "url": "https://wanderer.blog.csdn.net/"
+        "url": "https://github.com/SaiTingHu"
     },
     "samples": [
         {
@@ -17,7 +17,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/SaiTingHu/InfiniteList.git"
+        "url": "https://github.com/FantasyJony/InfiniteList.git"
     },
     "relatedPackages": {},
     "dependencies": {}
