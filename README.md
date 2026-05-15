@@ -12,7 +12,7 @@
 
 ## 使用方法
 
-- 1.拉取本模块到项目中的Assets/Plugins/HT文件夹下（Assets/Plugins/HT/InfiniteList），或以添加子模块的形式。
+- 1.拉取本模块到项目中的Assets/HTModules文件夹下（Assets/HTModules/InfiniteList），或以添加子模块的形式。
 
 - 2.或使用[模块管理器](https://wanderer.blog.csdn.net/article/details/109488065)克隆此模块。
 
