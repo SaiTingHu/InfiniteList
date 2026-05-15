@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Pool;
 using UnityEngine.UI;
 
 namespace HT.InfiniteList
@@ -9,6 +11,15 @@ namespace HT.InfiniteList
     /// </summary>
     public class InfiniteListScrollRect : ScrollRect
     {
+        public class ScrollRectElementAddEvent : UnityEvent<IListElement> {}
+        public class ScrollRectElementRemoveEvent : UnityEvent<IListElement> {}
+
+        private ScrollRectElementAddEvent _onElementAdded = new ();
+        public ScrollRectElementAddEvent onElementAdded { get { return _onElementAdded; } set { _onElementAdded = value; } }
+        
+        private ScrollRectElementRemoveEvent _onElementRemoved = new ();
+        public ScrollRectElementRemoveEvent onElementRemoved { get { return _onElementRemoved; } set { _onElementRemoved = value; } }
+        
         /// <summary>
         /// 元素模板
         /// </summary>
@@ -20,17 +31,17 @@ namespace HT.InfiniteList
         /// <summary>
         /// 元素高度
         /// </summary>
-        public int Height = 20;
+        private float _height = 20;
         /// <summary>
         /// 元素之间的间隔
         /// </summary>
-        public int Interval = 5;
+        public float Interval = 5;
 
         private List<object> _datas = new ();
         private HashSet<object> _dataIndexs = new ();
         private Dictionary<object, IListElement> _displayElements = new ();
         private HashSet<object> _invisibleList = new ();
-        private Queue<IListElement> _elementsPool = new ();
+        private ObjectPool<IListElement> _elementsPool;
         private RectTransform _uiTransform;
 
         /// <summary>
@@ -62,6 +73,23 @@ namespace HT.InfiniteList
         {
             base.Awake();
 
+            _elementsPool = new ObjectPool<IListElement>(
+                createFunc: () =>
+                {
+                    var go = Instantiate(ElementTemplate, content);
+                    return go.GetComponent<IListElement>();
+                }, 
+                actionOnGet: (element) =>
+                {
+                    element.SetVisible(true);
+                },
+                actionOnRelease: (element) =>
+                {
+                    element.OnClearData();
+                    element.SetVisible(false);
+                }
+            );
+
             // 设置滚动方向单方向匹配
             if (ListingDirection == Direction.Vertical)
             {
@@ -74,9 +102,33 @@ namespace HT.InfiniteList
                 vertical = false;
             }
             
+            // 强制height来自Template的尺寸
+            if (ElementTemplate != null)
+            {
+                var elementTemplateRectTransform = ElementTemplate.GetComponent<RectTransform>();
+                if (ListingDirection == Direction.Vertical)
+                {
+                    _height = elementTemplateRectTransform.rect.height;
+                }
+                else if (ListingDirection == Direction.Horizontal)
+                {
+                    _height = elementTemplateRectTransform.rect.width;
+                }
+            }
+            
             onValueChanged.AddListener((value) => { RefreshScrollView(); });
         }
 
+        protected override void OnDestroy()
+        {
+            if (_elementsPool != null)
+            {
+                _elementsPool.Dispose();
+                _elementsPool = null;
+            }
+            base.OnDestroy();
+        }
+       
         /// <summary>
         /// 添加一条新的数据到无限列表尾部
         /// </summary>
@@ -184,11 +236,11 @@ namespace HT.InfiniteList
         {
             if (ListingDirection == Direction.Vertical)
             {
-                content.sizeDelta = new Vector2(content.sizeDelta.x, _datas.Count * (Height + Interval));
+                content.sizeDelta = new Vector2(content.sizeDelta.x, _datas.Count * (_height + Interval));
             }
             else
             {
-                content.sizeDelta = new Vector2(_datas.Count * (Height + Interval), content.sizeDelta.y);
+                content.sizeDelta = new Vector2(_datas.Count * (_height + Interval), content.sizeDelta.y);
             }
 
             RefreshScrollView();
@@ -208,12 +260,12 @@ namespace HT.InfiniteList
 
                 ClearInvisibleVerticalElement(contentY, viewHeight);
 
-                int originIndex = (int)(contentY / (Height + Interval));
+                int originIndex = (int)(contentY / (_height + Interval));
                 if (originIndex < 0) originIndex = 0;
                 for (int i = originIndex; i < _datas.Count; i++)
                 {
                     var data = _datas[i];
-                    float viewY = -(i * Height + (i + 1) * Interval);
+                    float viewY = -(i * _height + (i + 1) * Interval);
                     float realY = viewY + contentY;
                     if (realY > -viewHeight)
                     {
@@ -223,10 +275,11 @@ namespace HT.InfiniteList
                             continue;
                         }
                         
-                        IListElement element = ExtractIdleElement();
+                        var element = _elementsPool.Get();
                         element.UITransform.anchoredPosition = new Vector2(0, viewY);
                         element.OnUpdateData(this, i, data);
                         _displayElements.Add(data, element);
+                        _onElementAdded?.Invoke(element);
                     }
                     else
                     {
@@ -244,12 +297,12 @@ namespace HT.InfiniteList
 
                 ClearInvisibleHorizontalElement(contentX, viewWidth);
 
-                int originIndex = (int)(-contentX / (Height + Interval));
+                int originIndex = (int)(-contentX / (_height + Interval));
                 if (originIndex < 0) originIndex = 0;
                 for (int i = originIndex; i < _datas.Count; i++)
                 {
                     var data = _datas[i];
-                    float viewX = i * Height + (i + 1) * Interval;
+                    float viewX = i * _height + (i + 1) * Interval;
                     float realX = viewX + contentX;
                     if (realX < viewWidth)
                     {
@@ -259,10 +312,11 @@ namespace HT.InfiniteList
                             continue;
                         }
 
-                        IListElement element = ExtractIdleElement();
+                        var element = _elementsPool.Get();
                         element.UITransform.anchoredPosition = new Vector2(viewX, 0);
                         element.OnUpdateData(this, i, data);
                         _displayElements.Add(data, element);
+                        _onElementAdded?.Invoke(element);
                     }
                     else
                     {
@@ -281,7 +335,7 @@ namespace HT.InfiniteList
             foreach (var element in _displayElements)
             {
                 float realY = element.Value.UITransform.anchoredPosition.y + contentY;
-                if (realY < Height && realY > -viewHeight)
+                if (realY < _height && realY > -viewHeight)
                 {
                     continue;
                 }
@@ -297,6 +351,7 @@ namespace HT.InfiniteList
             }
             _invisibleList.Clear();
         }
+        
         /// <summary>
         /// 清理并回收看不见的元素（水平模式）
         /// </summary>
@@ -307,7 +362,7 @@ namespace HT.InfiniteList
             foreach (var element in _displayElements)
             {
                 float realX = element.Value.UITransform.anchoredPosition.x + contentX;
-                if (realX > -Height && realX < viewWidth)
+                if (realX > -_height && realX < viewWidth)
                 {
                     continue;
                 }
@@ -323,35 +378,19 @@ namespace HT.InfiniteList
             }
             _invisibleList.Clear();
         }
-        /// <summary>
-        /// 提取一个空闲的无限列表元素
-        /// </summary>
-        /// <returns>无限列表元素</returns>
-        private IListElement ExtractIdleElement()
-        {
-            if (_elementsPool.Count > 0)
-            {
-                IListElement element = _elementsPool.Dequeue();
-                element.SetVisible(true);
-                return element;
-            }
-            else
-            {
-                GameObject go = Instantiate(ElementTemplate, content);
-                IListElement element = go.GetComponent<IListElement>();
-                element.SetVisible(true);
-                return element;
-            }
-        }
+   
+        
         /// <summary>
         /// 回收一个无用的无限列表元素
         /// </summary>
         /// <param name="element">无限列表元素</param>
         private void RecycleElement(IListElement element)
         {
-            element.OnClearData();
-            element.SetVisible(false);
-            _elementsPool.Enqueue(element);
+            // element.OnClearData();
+            // element.SetVisible(false);
+            // _elementsPool.Enqueue(element);
+            _elementsPool.Release(element);
+            _onElementRemoved?.Invoke(element);
         }
 
         /// <summary>

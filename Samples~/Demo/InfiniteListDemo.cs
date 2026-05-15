@@ -11,6 +11,9 @@ public class InfiniteListDemo : MonoBehaviour
 
     private void Start()
 	{
+        InfiniteList.onElementAdded.AddListener(OnElementAdded);
+        InfiniteList.onElementRemoved.AddListener(OnElementRemoved);
+        
         AddTwoData();
 
         //请注意，由于此事件会在列表到达尾部时添加2条数据，而如果删除数据，会收缩列表，导致列表到达尾部，从而又触发添加数据，导致删除数据无效
@@ -28,6 +31,7 @@ public class InfiniteListDemo : MonoBehaviour
                 AddTwoData();
             }
         });
+
     }
     
     private string RandomName()
@@ -53,5 +57,28 @@ public class InfiniteListDemo : MonoBehaviour
         InfiniteList.AddDatas(datas);
 
         Debug.Log("当前列表数据总量：" + InfiniteList.DataCount);
+    }
+
+    private void OnElementAdded(IListElement listElement)
+    {
+        var testElement = listElement as InfiniteListTestElement;
+        if (testElement != null)
+        {
+            testElement.OnLogName += OnLogName;
+        }
+    }
+    
+    private void OnElementRemoved(IListElement listElement)
+    {
+        var testElement = listElement as InfiniteListTestElement;
+        if (testElement != null)
+        {
+            testElement.OnLogName -= OnLogName;
+        }
+    }
+
+    private void OnLogName(string logName)
+    {
+        Debug.Log(logName);
     }
 }

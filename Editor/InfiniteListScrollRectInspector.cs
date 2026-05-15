@@ -62,17 +62,17 @@ namespace HT.InfiniteList
                 }
             }
 
-            EditorGUI.BeginChangeCheck();
-            int height = EditorGUILayout.IntField(_target.ListingDirection == InfiniteListScrollRect.Direction.Vertical ? "Height" : "Width", _target.Height);
-            if (EditorGUI.EndChangeCheck())
-            {
-                Undo.RecordObject(target, "Set InfiniteList Height");
-                _target.Height = height;
-                EditorUtility.SetDirty(target);
-            }
+            // EditorGUI.BeginChangeCheck();
+            // int height = EditorGUILayout.IntField(_target.ListingDirection == InfiniteListScrollRect.Direction.Vertical ? "Height" : "Width", _target.Height);
+            // if (EditorGUI.EndChangeCheck())
+            // {
+            //     Undo.RecordObject(target, "Set InfiniteList Height");
+            //     _target.Height = height;
+            //     EditorUtility.SetDirty(target);
+            // }
 
             EditorGUI.BeginChangeCheck();
-            int interval = EditorGUILayout.IntField("Interval", _target.Interval);
+            var interval = EditorGUILayout.FloatField("Interval", _target.Interval);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(target, "Set InfiniteList Interval");
