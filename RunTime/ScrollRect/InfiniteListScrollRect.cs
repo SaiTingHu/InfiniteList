@@ -26,11 +26,11 @@ namespace HT.InfiniteList
         /// </summary>
         public int Interval = 5;
 
-        private List<IListData> _datas = new List<IListData>();
-        private HashSet<IListData> _dataIndexs = new HashSet<IListData>();
-        private Dictionary<IListData, IListElement> _displayElements = new Dictionary<IListData, IListElement>();
-        private HashSet<IListData> _invisibleList = new HashSet<IListData>();
-        private Queue<IListElement> _elementsPool = new Queue<IListElement>();
+        private List<object> _datas = new ();
+        private HashSet<object> _dataIndexs = new ();
+        private Dictionary<object, IListElement> _displayElements = new ();
+        private HashSet<object> _invisibleList = new ();
+        private Queue<IListElement> _elementsPool = new ();
         private RectTransform _uiTransform;
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace HT.InfiniteList
         /// 添加一条新的数据到无限列表尾部
         /// </summary>
         /// <param name="data">无限列表数据</param>
-        public void AddData(IListData data)
+        public void AddData(object data)
         {
             if (_dataIndexs.Contains(data))
             {
@@ -99,7 +99,7 @@ namespace HT.InfiniteList
         /// </summary>
         /// <typeparam name="T">无限列表数据类型</typeparam>
         /// <param name="datas">无限列表数据</param>
-        public void AddDatas<T>(T[] datas) where T : IListData
+        public void AddDatas<T>(T[] datas)
         {
             for (int i = 0; i < datas.Length; i++)
             {
@@ -120,7 +120,7 @@ namespace HT.InfiniteList
         /// </summary>
         /// <typeparam name="T">无限列表数据类型</typeparam>
         /// <param name="datas">无限列表数据</param>
-        public void AddDatas<T>(List<T> datas) where T : IListData
+        public void AddDatas<T>(List<T> datas)
         {
             for (int i = 0; i < datas.Count; i++)
             {
@@ -140,7 +140,7 @@ namespace HT.InfiniteList
         /// 移除一条无限列表数据
         /// </summary>
         /// <param name="data">无限列表数据</param>
-        public void RemoveData(IListData data)
+        public void RemoveData(object data)
         {
             if (_dataIndexs.Contains(data))
             {
@@ -212,7 +212,7 @@ namespace HT.InfiniteList
                 if (originIndex < 0) originIndex = 0;
                 for (int i = originIndex; i < _datas.Count; i++)
                 {
-                    IListData data = _datas[i];
+                    var data = _datas[i];
                     float viewY = -(i * Height + (i + 1) * Interval);
                     float realY = viewY + contentY;
                     if (realY > -viewHeight)
@@ -225,7 +225,7 @@ namespace HT.InfiniteList
                         
                         IListElement element = ExtractIdleElement();
                         element.UITransform.anchoredPosition = new Vector2(0, viewY);
-                        element.OnUpdateData(this, data);
+                        element.OnUpdateData(this, i, data);
                         _displayElements.Add(data, element);
                     }
                     else
@@ -248,7 +248,7 @@ namespace HT.InfiniteList
                 if (originIndex < 0) originIndex = 0;
                 for (int i = originIndex; i < _datas.Count; i++)
                 {
-                    IListData data = _datas[i];
+                    var data = _datas[i];
                     float viewX = i * Height + (i + 1) * Interval;
                     float realX = viewX + contentX;
                     if (realX < viewWidth)
@@ -261,7 +261,7 @@ namespace HT.InfiniteList
 
                         IListElement element = ExtractIdleElement();
                         element.UITransform.anchoredPosition = new Vector2(viewX, 0);
-                        element.OnUpdateData(this, data);
+                        element.OnUpdateData(this, i, data);
                         _displayElements.Add(data, element);
                     }
                     else

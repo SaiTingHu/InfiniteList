@@ -170,7 +170,7 @@ namespace HT.InfiniteList
 
             GameObject elementTemplate = new GameObject("ElementTemplate");
             elementTemplate.AddComponent<RectTransform>();
-            elementTemplate.AddComponent<InfiniteListElement>();
+            // elementTemplate.AddComponent<InfiniteListElement>();
             elementTemplate.transform.SetParent(ilScrollRect.content);
             elementTemplate.GetComponent<RectTransform>().DockToLeftUp();
             elementTemplate.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);

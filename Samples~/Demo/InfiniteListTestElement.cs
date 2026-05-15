@@ -1,10 +1,11 @@
 ﻿using HT.InfiniteList;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// 无限列表测试元素
 /// </summary>
-public class InfiniteListTestElement : InfiniteListElement
+public class InfiniteListTestElement : MonoBehaviour, IListElement
 {
     public Text Name;
     public Button RemoveButton;
@@ -12,20 +13,28 @@ public class InfiniteListTestElement : InfiniteListElement
     private InfiniteListScrollRect _scrollRect;
     private InfiniteListTestData _data;
 
-    public override void OnUpdateData(InfiniteListScrollRect scrollRect, IListData data)
+    public RectTransform UITransform => transform as RectTransform;
+    
+    public void SetVisible(bool visible)
     {
-        base.OnUpdateData(scrollRect, data);
+        if (gameObject.activeSelf != visible)
+        {
+            gameObject.SetActive(visible);
+        }
+    }
 
+    public void OnUpdateData(InfiniteListScrollRect scrollRect, int index, object data)
+    {
         _scrollRect = scrollRect;
         _data = data as InfiniteListTestData;
-        Name.text = _data.Name;
+        Name.text = $"{index}. {_data?.Name}";
         RemoveButton.onClick.AddListener(() => { _scrollRect.RemoveData(_data); });
     }
 
-    public override void OnClearData()
+    public void OnClearData()
     {
-        base.OnClearData();
-
         RemoveButton.onClick.RemoveAllListeners();
     }
+
+
 }

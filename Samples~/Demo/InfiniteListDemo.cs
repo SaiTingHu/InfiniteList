@@ -47,7 +47,7 @@ public class InfiniteListDemo : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             InfiniteListTestData data = new InfiniteListTestData();
-            data.Name = (i + 1) + "." + RandomName();
+            data.Name = RandomName();
             datas.Add(data);
         }
         InfiniteList.AddDatas(datas);
