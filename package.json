@@ -1,7 +1,7 @@
 {
     "name": "com.ht.infinitelist",
     "displayName": "HT Infinitelist",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "unity": "2022.3",
     "description": "An infinite list scrolling view based on Unity's UGUI.",
     "author": {
